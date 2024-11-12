@@ -99,7 +99,7 @@
             <dependencies>
                 <!-- Import the JAX-RS API, we use provided scope as the API is included in JBoss EAP -->
                 <dependency>
-                    <groupId>org.jboss.spec.javax.ws.rs</groupId>
+                    <groupId>org.jboss.spec.jakarta.ws.rs</groupId>
                     <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
                     <version>1.0.1.Final</version>
                     <scope>provided</scope>
@@ -127,48 +127,6 @@
                 </plugins>
             </build>
         </profile>
-
-        <profile>
-            <id>thorntail-v2</id>
-
-            <dependencyManagement>
-                <dependencies>
-                    <dependency>
-                        <groupId>io.thorntail</groupId>
-                        <artifactId>bom-all</artifactId>
-                        <version>${version.thorntail}</version>
-                        <scope>import</scope>
-                        <type>pom</type>
-                    </dependency>
-                </dependencies>
-            </dependencyManagement>
-
-            <dependencies>
-                <!-- Wildfly Swarm Fractions -->
-                <dependency>
-                    <groupId>io.thorntail</groupId>
-                    <artifactId>microprofile</artifactId>
-                </dependency>
-            </dependencies>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.thorntail</groupId>
-                        <artifactId>thorntail-maven-plugin</artifactId>
-                        <version>${version.thorntail}</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>package</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
         <profile>
             <id>quarkus</id>
             <properties>
@@ -396,8 +354,8 @@
                         <version>2.0.4.Final</version>
                     </dependency>
                     <dependency>
-                        <groupId>javax.activation</groupId>
-                        <artifactId>javax.activation-api</artifactId>
+                        <groupId>jakarta.activation</groupId>
+                        <artifactId>jakarta.activation-api</artifactId>
                         <version>1.2.0</version>
                     </dependency>
                     <dependency>
@@ -423,8 +381,8 @@
                     <optional>true</optional>
                 </dependency>
                 <dependency>
-                    <groupId>javax.activation</groupId>
-                    <artifactId>javax.activation-api</artifactId>
+                    <groupId>jakarta.activation</groupId>
+                    <artifactId>jakarta.activation-api</artifactId>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>

@@ -43,15 +43,15 @@
 .ui-icon {
 	width: 16px;
 	height: 16px;
-	background-image: url(http://mp-starter-jessie.1d35.starter-us-east-1.openshiftapps.com/mp-starter/javax.faces.resource/images/ui-icons_222222_256x240.png.xhtml?ln=primefaces-omega)
+	background-image: url(http://mp-starter-jessie.1d35.starter-us-east-1.openshiftapps.com/mp-starter/jakarta.faces.resource/images/ui-icons_222222_256x240.png.xhtml?ln=primefaces-omega)
 }
 
 .ui-widget-content .ui-icon {
-	background-image: url(http://mp-starter-jessie.1d35.starter-us-east-1.openshiftapps.com/mp-starter/javax.faces.resource/images/ui-icons_222222_256x240.png.xhtml?ln=primefaces-omega)
+	background-image: url(http://mp-starter-jessie.1d35.starter-us-east-1.openshiftapps.com/mp-starter/jakarta.faces.resource/images/ui-icons_222222_256x240.png.xhtml?ln=primefaces-omega)
 }
 
 .ui-state-default .ui-icon {
-	background-image: url(http://mp-starter-jessie.1d35.starter-us-east-1.openshiftapps.com/mp-starter/javax.faces.resource/images/ui-icons_454545_256x240.png.xhtml?ln=primefaces-omega)
+	background-image: url(http://mp-starter-jessie.1d35.starter-us-east-1.openshiftapps.com/mp-starter/jakarta.faces.resource/images/ui-icons_454545_256x240.png.xhtml?ln=primefaces-omega)
 }
 
 .ui-icon-triangle-1-s {
@@ -89,7 +89,7 @@
 }
 
 .ui-button .ui-icon {
-	background-image: url(http://mp-starter-jessie.1d35.starter-us-east-1.openshiftapps.com/mp-starter/javax.faces.resource/images/ui-icons_ffffff_256x240.png.xhtml?ln=primefaces-omega)
+	background-image: url(http://mp-starter-jessie.1d35.starter-us-east-1.openshiftapps.com/mp-starter/jakarta.faces.resource/images/ui-icons_ffffff_256x240.png.xhtml?ln=primefaces-omega)
 }
 
 .ui-button {

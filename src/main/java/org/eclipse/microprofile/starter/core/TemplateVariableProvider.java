@@ -28,7 +28,7 @@ import org.eclipse.microprofile.starter.core.model.JavaSEVersion;
 import org.eclipse.microprofile.starter.core.model.JessieModel;
 import org.eclipse.microprofile.starter.core.model.MicroProfileVersion;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,7 +69,7 @@ public class TemplateVariableProvider {
             result.put("jakarta_ee_package", "jakarta");
 
         } else {
-            result.put("jakarta_ee_package", "javax");
+            result.put("jakarta_ee_package", "jakarta");
 
         }
         if (model.getSpecification().getMicroProfileVersion() == MicroProfileVersion.MP50

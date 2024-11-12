@@ -24,11 +24,10 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.wildfly.swarm.arquillian.DefaultDeployment;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
@@ -44,7 +43,6 @@ import static org.junit.Assert.assertTrue;
  * @author Michal Karm Babacek <karm@redhat.com>
  */
 @RunWith(Arquillian.class)
-@DefaultDeployment(type = DefaultDeployment.Type.WAR)
     public class APITest {
 
     public static final String API_URL = "http://127.0.0.1:9090/api";
