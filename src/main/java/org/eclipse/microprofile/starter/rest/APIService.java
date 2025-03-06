@@ -116,8 +116,11 @@ public class APIService {
         });
         // Add possible standalone specs for each MP Version
         mpvToOptions.forEach((key, value) -> value.setStandaloneSpecs(defineStandaloneSpecs(key, null)));
+        
+        int gitHashCode = version.getGit() != null ? version.getGit().hashCode() : 0;
+        
         mpvToOptionsEtag = new EntityTag(Integer.toHexString(
-                31 * version.getGit().hashCode() + mpvToOptions.hashCode() + specsDescriptions.hashCode()));
+                31 * gitHashCode + mpvToOptions.hashCode() + specsDescriptions.hashCode()));
         // Keys are servers and values are MP versions and specs
         serversToOptions = new HashMap<>(SupportedServer.values().length);
         for (SupportedServer s : SupportedServer.values()) {
@@ -133,7 +136,7 @@ public class APIService {
             serversToOptions.put(s, serverOptions);
         }
         serversToOptionsEtag = new EntityTag(Integer.toHexString(
-                31 * version.getGit().hashCode() + serversToOptions.hashCode() + specsDescriptions.hashCode()));
+                31 * gitHashCode + serversToOptions.hashCode() + specsDescriptions.hashCode()));
         try (Scanner s = new Scanner(FilesLocator.class.getClassLoader()
                 .getResourceAsStream("/REST-README.md")).useDelimiter("\\A")) {
             readme = (s.hasNext() ? s.next() : "") + "\n" + version.getGit() + "\n";
@@ -249,11 +252,10 @@ public class APIService {
 
     public Map<SupportedServer, Map<MicroProfileVersion, List<String>>> transformToLegacy() {
         List<SupportedServer> servers = new ArrayList<>(serversToOptions.keySet());
-        Collections.shuffle(servers);
-        Map<SupportedServer, Map<MicroProfileVersion, List<String>>> rndServersToOptions = new LinkedHashMap<>(servers.size());
+        Map<SupportedServer, Map<MicroProfileVersion, List<String>>> rndServersToOptions = new TreeMap<>((a,b) -> a.name().compareTo(b.name()));
         for (SupportedServer s : servers) {
             List<ServerOptions> so = serversToOptions.get(s);
-            Map<MicroProfileVersion, List<String>> mpvSpecs = new HashMap<>(so.size());
+            Map<MicroProfileVersion, List<String>> mpvSpecs = new TreeMap<>((a,b) -> a.getLabel().compareTo(b.getLabel()));
             so.forEach(soo -> mpvSpecs.put(soo.mpVersion, soo.mpSpecs));
             rndServersToOptions.put(s, mpvSpecs);
         }
@@ -289,8 +291,7 @@ public class APIService {
             }
         }
         List<SupportedServer> servers = new ArrayList<>(serversToOptions.keySet());
-        Collections.shuffle(servers);
-        Map<SupportedServer, List<ServerOptionsV5>> rndServersToOptions = new LinkedHashMap<>(servers.size());
+        Map<SupportedServer, List<ServerOptionsV5>> rndServersToOptions = new TreeMap<>((a,b) -> a.name().compareTo(b.name()));
         for (SupportedServer s : servers) {
             List<ServerOptions> options = serversToOptions.get(s);
             // Without the buildTool
@@ -312,12 +313,14 @@ public class APIService {
                 return Response.notModified().build();
             }
         }
+        
         List<SupportedServer> servers = new ArrayList<>(serversToOptions.keySet());
-        Collections.shuffle(servers);
-        Map<SupportedServer, List<ServerOptions>> rndServersToOptions = new LinkedHashMap<>(servers.size());
+        Map<SupportedServer, List<ServerOptions>> rndServersToOptions = new TreeMap<>((a,b) -> a.name().compareTo(b.name()));
         for (SupportedServer s : servers) {
             rndServersToOptions.put(s, serversToOptions.get(s));
         }
+        
+        
         Map<String, Map> serversAndSpecsDescriptions = new HashMap<>(2);
         serversAndSpecsDescriptions.put("configs", rndServersToOptions);
         serversAndSpecsDescriptions.put("descriptions", specsDescriptions);

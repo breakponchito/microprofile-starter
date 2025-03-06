@@ -46,7 +46,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.eclipse.microprofile.starter.TestMatrixTest.API_URL;
 import static org.eclipse.microprofile.starter.TestMatrixTest.TMP;
 import static org.junit.Assert.assertEquals;
 
@@ -59,6 +58,8 @@ public class Commands {
     private static final String STARTER_TS_WORKSPACE = "STARTER_TS_WORKSPACE";
 
     private static final Pattern LINUX_PS_AUX_PID = Pattern.compile("\\w*\\s*(\\d*).*");
+    
+    private static final String API_URL = "http://localhost:9080/api";
 
     public static String getWorkspaceDir() {
         String env = System.getenv().get(STARTER_TS_WORKSPACE);

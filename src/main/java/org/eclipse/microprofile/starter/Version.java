@@ -42,12 +42,14 @@ public class Version {
                 .getResourceAsStream("/version.txt")).useDelimiter("\\A")) {
             git = s.hasNext() ? s.next() : "";
         } catch (Exception e) {
-            LOG.log(Level.SEVERE, e.getMessage());
+            LOG.log(Level.INFO, e.getMessage());
         }
     }
 
     public String getGit() {
         return git;
     }
+    
+    
 }
     

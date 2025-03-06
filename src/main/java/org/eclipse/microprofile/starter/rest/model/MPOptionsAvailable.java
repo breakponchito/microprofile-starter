@@ -43,7 +43,6 @@ public class MPOptionsAvailable {
     }
 
     public List<SupportedServer> getSupportedServers() {
-        Collections.shuffle(supportedServers);
         return supportedServers;
     }
 

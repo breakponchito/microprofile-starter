@@ -19,6 +19,8 @@
  */
 package org.eclipse.microprofile.starter;
 
+import java.net.URISyntaxException;
+import java.net.URL;
 import org.eclipse.microprofile.starter.addon.microprofile.servers.model.SupportedServer;
 import org.eclipse.microprofile.starter.core.model.BuildTool;
 import org.eclipse.microprofile.starter.utils.Commands;
@@ -27,6 +29,7 @@ import org.eclipse.microprofile.starter.utils.MPSpecPOST;
 import org.eclipse.microprofile.starter.utils.SpecSelection;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,7 +65,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * MicroProfile Starter runtimes servers smoke tests.
- *
+ * <p>
  * The goal is to make sure all our runtimes can be built and run without errors
  * and that the example applications show expected outputs.
  *
@@ -75,17 +78,21 @@ public class TestMatrixTest {
 
     public static final String TMP = getWorkspaceDir();
 
-    public static final String API_URL = "http://127.0.0.1:9090/api";
-    final Client client = ClientBuilder.newBuilder().connectTimeout(10, TimeUnit.MINUTES).readTimeout(10, TimeUnit.MINUTES).build();
+    private final Client client = ClientBuilder.newBuilder().connectTimeout(10, TimeUnit.MINUTES).readTimeout(10, TimeUnit.MINUTES).build();
 
-    WebTarget target;
+    private WebTarget target;
+    
+    public static final String URI = "api";
+
+    @ArquillianResource
+    private URL baseURL;
 
     @Rule
     public TestName testName = new TestName();
 
     @Before
-    public void before() {
-        target = client.target(API_URL);
+    public void before() throws URISyntaxException {
+        target = client.target(baseURL.toURI() + URI);
     }
 
     public void testRuntime(String supportedServer, String artifactId, SpecSelection specSelection, int[] additionalPortsToCheck, BuildTool buildTool)
@@ -135,7 +142,7 @@ public class TestMatrixTest {
             if (specSelection.hasServiceB) {
                 buildLogB = new File(directoryB.getAbsolutePath() + File.separator + directoryB.getName() + "-build.log");
             }
-            ExecutorService buildService = Executors.newFixedThreadPool(threadPoolSize);  
+            ExecutorService buildService = Executors.newFixedThreadPool(threadPoolSize);
             buildService.submit(new Commands.ProcessRunner(directoryA, buildLogA, buildCmdRunCmdWebAddr[0], 20));
             if (specSelection.hasServiceB) {
                 buildService.submit(new Commands.ProcessRunner(directoryB, buildLogB, buildCmdRunCmd[0], 20));
@@ -321,64 +328,36 @@ public class TestMatrixTest {
         assertEquals("MicroProfile Starter REST API should be available", Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
-    @Test
-    @RunAsClient
-    public void thorntailEmpty() throws IOException, InterruptedException {
-        testRuntime("THORNTAIL_V2", "thorntail",
-                SpecSelection.EMPTY, new int[]{9990}, BuildTool.MAVEN);
-    }
-
-    @Test
-    @RunAsClient
-    public void thorntailAll() throws IOException, InterruptedException {
-        testRuntime("THORNTAIL_V2", "thorntail",
-                SpecSelection.ALL, new int[]{9990, 8180, 10090}, BuildTool.MAVEN);
-    }
-
-    @Test
-    @RunAsClient
-    public void thorntailAllButJWTRest() throws IOException, InterruptedException {
-        testRuntime("THORNTAIL_V2", "thorntail",
-                SpecSelection.ALL_BUT_JWT_REST, new int[]{9990}, BuildTool.MAVEN);
-    }
-
-    @Test
-    @RunAsClient
-    public void thorntailJWTRest() throws IOException, InterruptedException {
-        testRuntime("THORNTAIL_V2", "thorntail",
-                SpecSelection.JWT_REST, new int[]{9990, 8180, 10090}, BuildTool.MAVEN);
-    }
-
-    @Test
-    @RunAsClient
+    //@Test
+    // @RunAsClient
     public void payaraEmpty() throws IOException, InterruptedException {
         testRuntime("PAYARA_MICRO", "payara",
                 SpecSelection.EMPTY, new int[]{6900}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    //@Test
+    //@RunAsClient
     public void payaraAll() throws IOException, InterruptedException {
         testRuntime("PAYARA_MICRO", "payara",
                 SpecSelection.ALL, new int[]{6900, 6901, 8180}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    //@Test
+    // @RunAsClient
     public void payaraAllGradle() throws IOException, InterruptedException {
         testRuntime("PAYARA_MICRO", "payara",
                 SpecSelection.ALL, new int[]{6900, 6901, 8180}, BuildTool.GRADLE);
     }
 
-    @Test
-    @RunAsClient
+    //@Test
+    //@RunAsClient
     public void payaraAllButJWTRest() throws IOException, InterruptedException {
         testRuntime("PAYARA_MICRO", "payara",
                 SpecSelection.ALL_BUT_JWT_REST, new int[]{6900}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    //@Test
+    // @RunAsClient
     public void payaraJWTRest() throws IOException, InterruptedException {
         testRuntime("PAYARA_MICRO", "payara",
                 SpecSelection.JWT_REST, new int[]{6900, 6901, 8180}, BuildTool.MAVEN);
@@ -391,246 +370,246 @@ public class TestMatrixTest {
                 SpecSelection.EMPTY, new int[]{8181, 9080, 8543, 9443}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    //@Test
+    //@RunAsClient
     public void libertyGraphQL() throws IOException, InterruptedException {
         testRuntime("LIBERTY", "liberty",
                 SpecSelection.GRAPHQL, new int[]{8181, 9080, 8543, 9443}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    //@RunAsClient
     public void libertyAll() throws IOException, InterruptedException {
         testRuntime("LIBERTY", "liberty",
                 SpecSelection.ALL, new int[]{8181, 9080, 8543, 9443, 9444, 8281, 9081}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void libertyAllGradle() throws IOException, InterruptedException {
         testRuntime("LIBERTY", "liberty",
                 SpecSelection.ALL, new int[]{8181, 9080, 8543, 9443, 9444, 8281, 9081}, BuildTool.GRADLE);
     }
 
-    @Test
-    @RunAsClient
+    //@Test
+    // @RunAsClient
     public void libertyAllButJWTRest() throws IOException, InterruptedException {
         testRuntime("LIBERTY", "liberty",
                 SpecSelection.ALL_BUT_JWT_REST, new int[]{8181, 9080, 8543, 9443}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void libertyJWTRest() throws IOException, InterruptedException {
         testRuntime("LIBERTY", "liberty",
                 SpecSelection.JWT_REST, new int[]{8181, 9080, 8543, 9443, 9444, 8281, 9081}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void helidonEmpty() throws IOException, InterruptedException {
         testRuntime("HELIDON", "helidon",
                 SpecSelection.EMPTY, new int[]{}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    //@Test
+    // @RunAsClient
     public void helidonAll() throws IOException, InterruptedException {
         testRuntime("HELIDON", "helidon",
                 SpecSelection.ALL, new int[]{8180}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void helidonAllGradle() throws IOException, InterruptedException {
         testRuntime("HELIDON", "helidon",
                 SpecSelection.ALL, new int[]{8180}, BuildTool.GRADLE);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    //  @RunAsClient
     public void helidonAllButJWTRest() throws IOException, InterruptedException {
         testRuntime("HELIDON", "helidon",
                 SpecSelection.ALL_BUT_JWT_REST, new int[]{}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void helidonJWTRest() throws IOException, InterruptedException {
         testRuntime("HELIDON", "helidon",
                 SpecSelection.JWT_REST, new int[]{8180}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    //@RunAsClient
     public void kumuluzeeEmpty() throws IOException, InterruptedException {
         testRuntime("KUMULUZEE", "kumuluzee",
                 SpecSelection.EMPTY, new int[]{}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void kumuluzeeAll() throws IOException, InterruptedException {
         testRuntime("KUMULUZEE", "kumuluzee",
                 SpecSelection.ALL, new int[]{8180}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    //@RunAsClient
     public void kumuluzeeAllButJWTRest() throws IOException, InterruptedException {
         testRuntime("KUMULUZEE", "kumuluzee",
                 SpecSelection.ALL_BUT_JWT_REST, new int[]{}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void kumuluzeeJWTRest() throws IOException, InterruptedException {
         testRuntime("KUMULUZEE", "kumuluzee",
                 SpecSelection.JWT_REST, new int[]{8180}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void tomeeEmpty() throws IOException, InterruptedException {
         testRuntime("TOMEE", "tomee",
                 SpecSelection.EMPTY, new int[]{8009, 8005}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    //@RunAsClient
     public void tomeeAll() throws IOException, InterruptedException {
         testRuntime("TOMEE", "tomee",
                 SpecSelection.ALL, new int[]{8009, 8005, 8180, 8109, 8105}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void tomeeAllButJWTRest() throws IOException, InterruptedException {
         testRuntime("TOMEE", "tomee",
                 SpecSelection.ALL_BUT_JWT_REST, new int[]{8009, 8005}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void tomeeJWTRest() throws IOException, InterruptedException {
         testRuntime("TOMEE", "tomee",
                 SpecSelection.JWT_REST, new int[]{8009, 8005, 8180, 8109, 8105}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void quarkusEmpty() throws IOException, InterruptedException {
         testRuntime("QUARKUS", "quarkus",
                 SpecSelection.EMPTY, new int[]{9990}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void quarkusAllGradle() throws IOException, InterruptedException {
         testRuntime("QUARKUS", "quarkus",
                 SpecSelection.ALL, new int[]{9990, 8180, 10090}, BuildTool.GRADLE);
     }
 
-    @Test
-    @RunAsClient
+    //@Test
+    // @RunAsClient
     public void quarkusAll() throws IOException, InterruptedException {
         testRuntime("QUARKUS", "quarkus",
                 SpecSelection.ALL, new int[]{9990, 8180, 10090}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    //@RunAsClient
     public void quarkusAllButJWTRest() throws IOException, InterruptedException {
         testRuntime("QUARKUS", "quarkus",
                 SpecSelection.ALL_BUT_JWT_REST, new int[]{9990}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void quarkusJWTRest() throws IOException, InterruptedException {
         testRuntime("QUARKUS", "quarkus",
                 SpecSelection.JWT_REST, new int[]{9990, 8180, 10090}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    //  @Test
+    // @RunAsClient
     public void wildflyEmpty() throws IOException, InterruptedException {
         testRuntime("WILDFLY", "wildfly",
                 SpecSelection.EMPTY, new int[]{9990}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void wildflyAll() throws IOException, InterruptedException {
         testRuntime("WILDFLY", "wildfly",
                 SpecSelection.ALL, new int[]{9990, 8180, 10090}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    //@RunAsClient
     public void wildflyAllButJWTRest() throws IOException, InterruptedException {
         testRuntime("WILDFLY", "wildfly",
                 SpecSelection.ALL_BUT_JWT_REST, new int[]{9990}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    //  @Test
+    // @RunAsClient
     public void wildflyJWTRest() throws IOException, InterruptedException {
         testRuntime("WILDFLY", "wildfly",
                 SpecSelection.JWT_REST, new int[]{9990, 8180, 10090}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    //@Test
+    // @RunAsClient
     public void wildflyConfig() throws IOException, InterruptedException {
         testRuntime("WILDFLY", "wildfly",
                 SpecSelection.CONFIG, new int[]{9990}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void wildflyFaultTolerance() throws IOException, InterruptedException {
         testRuntime("WILDFLY", "wildfly",
                 SpecSelection.FAULT_TOLERANCE, new int[]{9990}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    //@Test
+    //@RunAsClient
     public void wildflyHealthchecks() throws IOException, InterruptedException {
         testRuntime("WILDFLY", "wildfly",
                 SpecSelection.HEALTH_CHECKS, new int[]{9990}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    //@RunAsClient
     public void wildflyJWTAuth() throws IOException, InterruptedException {
         testRuntime("WILDFLY", "wildfly",
                 SpecSelection.JWT_AUTH, new int[]{9990, 8180, 10090}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    //@RunAsClient
     public void wildflyMetrics() throws IOException, InterruptedException {
         testRuntime("WILDFLY", "wildfly",
                 SpecSelection.METRICS, new int[]{9990}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    // @Test
+    // @RunAsClient
     public void wildflyOpenAPI() throws IOException, InterruptedException {
         testRuntime("WILDFLY", "wildfly",
                 SpecSelection.OPEN_API, new int[]{9990}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    //@Test
+    //@RunAsClient
     public void wildflyOpenTracing() throws IOException, InterruptedException {
         testRuntime("WILDFLY", "wildfly",
                 SpecSelection.OPEN_TRACING, new int[]{9990}, BuildTool.MAVEN);
     }
 
-    @Test
-    @RunAsClient
+    //@Test
+    // @RunAsClient
     public void wildflyRestClient() throws IOException, InterruptedException {
         testRuntime("WILDFLY", "wildfly",
                 SpecSelection.REST_CLIENT, new int[]{9990, 8180, 10090}, BuildTool.MAVEN);

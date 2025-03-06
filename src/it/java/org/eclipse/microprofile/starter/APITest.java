@@ -19,34 +19,62 @@
  */
 package org.eclipse.microprofile.starter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.logging.Logger;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.client.WebTarget;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
-
-import static org.junit.Assert.assertTrue;
-
 /**
  * MicroProfile Starter runtimes API smoke tests.
- *
+ * <p>
  * Some rudimentary tests to make sure we ain't breaking the API.
  *
  * @author Michal Karm Babacek <karm@redhat.com>
  */
 @RunWith(Arquillian.class)
-    public class APITest {
+public class APITest {
 
-    public static final String API_URL = "http://127.0.0.1:9090/api";
-    final Client client = ClientBuilder.newBuilder().build();
+    public static final String URI = "api";
+
+    private static final String WARNAME = "mp-starter-test.war";
+    private Client client = ClientBuilder.newClient();
+
+    private static final Logger logger = Logger.getLogger(APITest.class.getName());
+
+    @Deployment(testable = true)
+    public static WebArchive createDeployment() {
+        WebArchive archive = ShrinkWrap.create(WebArchive.class, WARNAME)
+                .addPackages(true, "org.eclipse.microprofile.starter")
+                .addAsLibraries(Maven.resolver().resolve("org.thymeleaf:thymeleaf:3.0.10.RELEASE",
+                                "org.apache.maven:maven-model:3.9.6", "org.apache.maven:maven-builder-support:3.9.6",
+                                "org.apache.maven:maven-artifact:3.9.6", "org.apache.maven:maven-model-builder:3.9.6",
+                                "com.google.guava:guava:11.0.2", "com.fasterxml.jackson.core:jackson-core:2.10.5",
+                                "com.fasterxml.jackson.core:jackson-annotations:2.10.5", "com.fasterxml.jackson.core:jackson-databind:2.10.5",
+                                "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.10.5",
+                                "org.apache.commons:commons-compress:1.20")
+                        .withTransitivity().asFile());
+        return archive;
+    }
+
+    @ArquillianResource
+    private URL baseURL;
 
     private WebTarget target;
     private File v7Matrix;
@@ -61,8 +89,8 @@ import static org.junit.Assert.assertTrue;
     private File v3MatrixServers;
 
     @Before
-    public void before() {
-        target = client.target(API_URL);
+    public void before() throws URISyntaxException {
+        target = client.target(baseURL.toURI() + URI);
         v7Matrix = new File(getClass().getClassLoader().getResource("json_examples/v7/supportMatrix.json.segments").getFile());
         v7MatrixServers = new File(getClass().getClassLoader().getResource("json_examples/v7/supportMatrix_servers.json.segments").getFile());
         v6Matrix = new File(getClass().getClassLoader().getResource("json_examples/v6/supportMatrix.json.segments").getFile());
@@ -75,20 +103,16 @@ import static org.junit.Assert.assertTrue;
         v3MatrixServers = new File(getClass().getClassLoader().getResource("json_examples/v3/supportMatrix_servers.json.segments").getFile());
     }
 
-    public void test(File segments, String uri) throws FileNotFoundException {
-        String response = client.target(API_URL + uri).request().get(String.class);
-        try (Scanner scanner = new Scanner(segments, StandardCharsets.UTF_8.toString())) {
-            scanner.useDelimiter("\n");
-            while (scanner.hasNext()) {
-                String l = scanner.nextLine();
-                assertTrue("Response of " + uri + " \n" + response + "\n should have contained the string: " + l, response.contains(l));
-            }
-        }
+    public void test(File segments, String uri) throws IOException, URISyntaxException {
+        String response = client.target(baseURL.toString() + URI + uri).request().get(String.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String expectedJson = objectMapper.writeValueAsString(objectMapper.readTree(segments));
+        Assert.assertEquals("Not Equal failure", expectedJson, response);
     }
 
     @Test
     @RunAsClient
-    public void supportMatrix() throws FileNotFoundException {
+    public void supportMatrix() throws IOException, URISyntaxException {
         test(v7Matrix, "/7/supportMatrix");
         test(v7MatrixServers, "/7/supportMatrix/servers");
         test(v6Matrix, "/6/supportMatrix");
